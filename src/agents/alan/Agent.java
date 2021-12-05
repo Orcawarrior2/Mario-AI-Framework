@@ -22,10 +22,8 @@ public class Agent implements MarioAgent {
         // Future ideas:
         // Realizing there's a timer and moving faster but sloppier
         // "Accidentally" start running and just start spamming it like he's practicing
-        // Rage quitting?
         // Trying to figure out what a gumba does, goes up to pet it
         // Not knowing how to open a ? block
-        // Alan gives up and installs hax/mods?
 
     }
 
@@ -57,13 +55,21 @@ public class Agent implements MarioAgent {
     @Override
     public boolean[] getActions(MarioForwardModel model, MarioTimer timer) {
         switch(this.currentState){
+
             case FIGURING:
                 return new boolean[1];
             case FIDGET:
                 return this.fidgeter.getFidgetAction();
 
+            case FIGURING:
+                return new boolean[1];
+
+            case FIDGET:
+                return this.fidgeter.getFidgetAction(model.isMarioOnGround());
+
             case PAUSE:
-                return new boolean[2];
+                model.pauseGame();
+                return new boolean[MarioActions.numberOfActions()];
 
             default:
                 return new boolean[0];

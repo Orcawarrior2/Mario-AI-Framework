@@ -640,4 +640,13 @@ public class MarioForwardModel {
     public int[][] getMarioSceneObservation(int detail) {
         return this.world.getSceneObservation(this.world.mario.x, this.world.mario.y, detail);
     }
+
+    // CODE ADDED BY JUSTIN MITCHELL
+    public boolean gameIsPaused() {
+        return this.world.gameStatus == GameStatus.TIME_OUT;
+    }
+
+    public void pauseGame() {
+        this.world.timeout();
+    }
 }
