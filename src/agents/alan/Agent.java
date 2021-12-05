@@ -12,9 +12,13 @@ import engine.helper.MarioActions;
 public class Agent implements MarioAgent {
 
     private enum STATE {
-        FIDGET,     // Instead of sitting still while, Alan bounces around like humans do
-        PAUSE,      // Alan gets bored and sometimes pauses to get snacks or something (rarer)
-        FIGURING,   // Mario lacks tutorials and Alan is new to the game, so at first he's still learning controls
+        DEFAULT,        // Normal A* Algorithm from the RobinBaumgaten
+        QUESTION_BOX,   // When Mario is within a certain distance to a "? box", bump it
+        POWERUP_GRAB,   // Once a powerup is generated from a "? box", this state makes Mario grab it
+        ENEMY_SMASH,    // Enemy is detected, Mario stomps it
+        FIDGET,         // Instead of sitting still while, Alan bounces around like humans do
+        PAUSE,          // Alan gets bored and sometimes pauses to get snacks or something (rarer)
+        FIGURING,       // Mario lacks tutorials and Alan is new to the game, so at first he's still learning controls
         // Future ideas:
         // Realizing there's a timer and moving faster but sloppier
         // "Accidentally" start running and just start spamming it like he's practicing
@@ -51,20 +55,24 @@ public class Agent implements MarioAgent {
     @Override
     public boolean[] getActions(MarioForwardModel model, MarioTimer timer) {
         switch(this.currentState){
-            case FIGURING: {
+
+            case FIGURING:
                 return new boolean[1];
-            }
-            case FIDGET: {
+            case FIDGET:
+                return this.fidgeter.getFidgetAction();
+
+            case FIGURING:
+                return new boolean[1];
+
+            case FIDGET:
                 return this.fidgeter.getFidgetAction(model.isMarioOnGround());
-            }
-            case PAUSE: {
+
+            case PAUSE:
                 model.pauseGame();
                 return new boolean[MarioActions.numberOfActions()];
-            }
-            default: {
-                return new boolean[0];
-            }
 
+            default:
+                return new boolean[0];
         }
     }
 

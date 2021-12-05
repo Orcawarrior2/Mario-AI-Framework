@@ -27,21 +27,36 @@ public class Fidgeter {
     public boolean[] getFidgetAction(boolean isOnGround) {
         boolean[] result = new boolean[MarioActions.numberOfActions()];
         switch(mode){
-            case JUMPING: {
+
+            case JUMPING:
+                result[MarioActions.JUMP.getValue()] = true;
+
+            case PACE_LEFT:
+                result[MarioActions.LEFT.getValue()] = true;
+                result[MarioActions.RIGHT.getValue()] = false;
+                result[MarioActions.SPEED.getValue()] = false;
+
+            case PACE_RIGHT:
+                result[MarioActions.LEFT.getValue()] = false;
+                result[MarioActions.RIGHT.getValue()] = true;
+                result[MarioActions.SPEED.getValue()] = false;
+
+            case JUMPING:
                 result[MarioActions.JUMP.getValue()] = true;
                 if(!isOnGround) return result; //Idle while in air without counting it as a fidget repetition
                 break;
-            }
-            case PACING: {
+
+            case PACING:
                 boolean left = this.fidgetRepetitions < this.paceDistance / 2;
                 result[MarioActions.LEFT.getValue()] = left;
                 result[MarioActions.RIGHT.getValue()] = !left;
                 break;
-            }
-            case SQUATTING: {
+
+            case SQUATTING:
                 result[MarioActions.DOWN.getValue()] = this.fidgetRepetitions%2 == 0;
                 break;
-            }
+
+
         }
         boolean change = updateFidgetState();
         if(change) this.fidgetRepetitions = 0;
