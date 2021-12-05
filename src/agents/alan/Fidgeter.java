@@ -8,42 +8,44 @@ public class Fidgeter {
     // FIDGET STATE CODE (MIGHT MOVE TO NEW FILE LATER)
     private enum FIDGET_MODE {
         JUMPING,
-        PACE_LEFT,
-        PACE_RIGHT,
+        PACING,
+        SQUATTING,
         ERROR
     }
 
-    private Random RNG = new Random();
+    private final Random RNG = new Random();
     private FIDGET_MODE mode;
     private int paceDistance; // How far (in frames) Mario will pace before turning around
     private int fidgetRepetitions; // Accumulator for how long since fidget has been changed
 
     public Fidgeter() {
         this.mode = randomMode();
-        this.paceDistance = RNG.nextInt(10) + 100;
+        this.setPaceDistance();
         this.fidgetRepetitions = 0;
-
     }
 
-    public boolean[] getFidgetAction() {
+    public boolean[] getFidgetAction(boolean isOnGround) {
         boolean[] result = new boolean[MarioActions.numberOfActions()];
         switch(mode){
-            case JUMPING -> {
+            case JUMPING: {
                 result[MarioActions.JUMP.getValue()] = true;
+                if(!isOnGround) return result; //Idle while in air without counting it as a fidget repetition
+                break;
             }
-            case PACE_LEFT -> {
-                result[MarioActions.LEFT.getValue()] = true;
-                result[MarioActions.RIGHT.getValue()] = false;
-                result[MarioActions.SPEED.getValue()] = false;
+            case PACING: {
+                boolean left = this.fidgetRepetitions < this.paceDistance / 2;
+                result[MarioActions.LEFT.getValue()] = left;
+                result[MarioActions.RIGHT.getValue()] = !left;
+                break;
             }
-            case PACE_RIGHT -> {
-                result[MarioActions.LEFT.getValue()] = false;
-                result[MarioActions.RIGHT.getValue()] = true;
-                result[MarioActions.SPEED.getValue()] = false;
+            case SQUATTING: {
+                result[MarioActions.DOWN.getValue()] = this.fidgetRepetitions%2 == 0;
+                break;
             }
         }
         boolean change = updateFidgetState();
-        this.fidgetRepetitions += (change) ? 0 : 1;
+        if(change) this.fidgetRepetitions = 0;
+        else this.fidgetRepetitions++;
         return result;
     }
 
@@ -51,8 +53,8 @@ public class Fidgeter {
         return FIDGET_MODE.values()[RNG.nextInt(FIDGET_MODE.values().length-1)];
     }
 
-    private boolean isPacing(FIDGET_MODE mode){
-        return mode == FIDGET_MODE.PACE_LEFT || mode == FIDGET_MODE.PACE_RIGHT;
+    private void setPaceDistance(){
+        this.paceDistance = RNG.nextInt(20) + 30;
     }
 
     private boolean updateFidgetState(){
@@ -61,24 +63,29 @@ public class Fidgeter {
         // Alan will usually do the same thing again, but he may switch to the other fidget mode
         boolean needsToChange = false;
         boolean hasChanged = false;
-        if(this.mode == FIDGET_MODE.JUMPING){
-            //As we jump more and more, there's an increasing chance that we change
-            needsToChange = (RNG.nextFloat() / this.fidgetRepetitions) < 0.05;
-        } else if(isPacing(this.mode)){
-            if(this.fidgetRepetitions > this.paceDistance && RNG.nextFloat() < 0.9) {
-                this.mode = (this.mode == FIDGET_MODE.PACE_LEFT) ? FIDGET_MODE.PACE_RIGHT : FIDGET_MODE.PACE_LEFT;
-                hasChanged = true;
-                //When we change fidget direction, there's also a 5% chance to change fidget randomly
-                if(RNG.nextFloat() < 0.05) needsToChange = true;
+        switch (this.mode){
+            case JUMPING: {
+                needsToChange = RNG.nextFloat() < 0.05;
+                break;
             }
-        } else if(this.mode == FIDGET_MODE.ERROR) needsToChange = true;
+            case PACING: {
+                needsToChange = this.fidgetRepetitions > this.paceDistance;
+                break;
+            }
+            case SQUATTING: {
+                needsToChange = RNG.nextFloat() < 0.1;
+            }
+            default: {
+                needsToChange = true;
+            }
+        }
 
         if(needsToChange) {
             FIDGET_MODE oldMode = this.mode;
             this.mode = randomMode();
             hasChanged = this.mode != oldMode;
             //If we stop pacing, then we change the distance of the next pace
-            if(isPacing(oldMode) && !isPacing(this.mode)) paceDistance = RNG.nextInt(100) + 100;
+            if(oldMode == FIDGET_MODE.PACING && hasChanged) this.setPaceDistance();
         }
 
         return hasChanged; //Returns true if we've changed
