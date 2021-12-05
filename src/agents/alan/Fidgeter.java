@@ -27,20 +27,6 @@ public class Fidgeter {
     public boolean[] getFidgetAction(boolean isOnGround) {
         boolean[] result = new boolean[MarioActions.numberOfActions()];
         switch(mode){
-
-            case JUMPING:
-                result[MarioActions.JUMP.getValue()] = true;
-
-            case PACE_LEFT:
-                result[MarioActions.LEFT.getValue()] = true;
-                result[MarioActions.RIGHT.getValue()] = false;
-                result[MarioActions.SPEED.getValue()] = false;
-
-            case PACE_RIGHT:
-                result[MarioActions.LEFT.getValue()] = false;
-                result[MarioActions.RIGHT.getValue()] = true;
-                result[MarioActions.SPEED.getValue()] = false;
-
             case JUMPING:
                 result[MarioActions.JUMP.getValue()] = true;
                 if(!isOnGround) return result; //Idle while in air without counting it as a fidget repetition
@@ -89,6 +75,7 @@ public class Fidgeter {
             }
             case SQUATTING: {
                 needsToChange = RNG.nextFloat() < 0.1;
+                break;
             }
             default: {
                 needsToChange = true;
