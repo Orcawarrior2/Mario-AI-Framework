@@ -28,19 +28,18 @@ public class Fidgeter {
     public boolean[] getFidgetAction() {
         boolean[] result = new boolean[MarioActions.numberOfActions()];
         switch(mode){
-            case JUMPING -> {
+            case JUMPING:
                 result[MarioActions.JUMP.getValue()] = true;
-            }
-            case PACE_LEFT -> {
+
+            case PACE_LEFT:
                 result[MarioActions.LEFT.getValue()] = true;
                 result[MarioActions.RIGHT.getValue()] = false;
                 result[MarioActions.SPEED.getValue()] = false;
-            }
-            case PACE_RIGHT -> {
+
+            case PACE_RIGHT:
                 result[MarioActions.LEFT.getValue()] = false;
                 result[MarioActions.RIGHT.getValue()] = true;
                 result[MarioActions.SPEED.getValue()] = false;
-            }
         }
         boolean change = updateFidgetState();
         this.fidgetRepetitions += (change) ? 0 : 1;
