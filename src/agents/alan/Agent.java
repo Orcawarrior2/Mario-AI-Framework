@@ -9,28 +9,9 @@ import engine.helper.MarioActions;
  * @author Matthew Aguiar and Justin Mitchell
  * CS/IMGD 4100 Group #9
  */
-public class Agent implements MarioAgent {
-
-    private enum STATE {
-        DEFAULT,        // Normal A* Algorithm from the RobinBaumgaten
-        QUESTION_BOX,   // When Mario is within a certain distance to a "? box", bump it
-        POWERUP_GRAB,   // Once a powerup is generated from a "? box", this state makes Mario grab it
-        ENEMY_SMASH,    // Enemy is detected, Mario stomps it
-        FIDGET,         // Instead of sitting still while, Alan bounces around like humans do
-        PAUSE,          // Alan gets bored and sometimes pauses to get snacks or something (rarer)
-        FIGURING,       // Mario lacks tutorials and Alan is new to the game, so at first he's still learning controls
-        // Future ideas:
-        // Realizing there's a timer and moving faster but sloppier
-        // "Accidentally" start running and just start spamming it like he's practicing
-        // Trying to figure out what a gumba does, goes up to pet it
-        // Not knowing how to open a ? block
-
-    }
-
+public class Agent extends AbsActioner implements MarioAgent {
     private STATE currentState;
-    private Fidgeter fidgeter;
-    private boolean[] nextMove;
-    private boolean[] previousMove;
+    private AbsActioner actioner;
     /**
      * initialize and prepare the agent before the game starts
      *
@@ -40,9 +21,7 @@ public class Agent implements MarioAgent {
     @Override
     public void initialize(MarioForwardModel model, MarioTimer timer) {
         this.currentState = STATE.FIDGET;
-        this.fidgeter = new Fidgeter();
-        this.nextMove = new boolean[MarioActions.numberOfActions()];
-        this.previousMove = new boolean[MarioActions.numberOfActions()];
+        this.actioner = getActioner();
     }
 
     /**
@@ -54,20 +33,16 @@ public class Agent implements MarioAgent {
      */
     @Override
     public boolean[] getActions(MarioForwardModel model, MarioTimer timer) {
-        switch(this.currentState){
-            case FIGURING:
-                return new boolean[1];
+        boolean[] result = this.actioner.getActions(model, timer);
 
-            case FIDGET:
-                return this.fidgeter.getFidgetAction(model.isMarioOnGround());
-
-            case PAUSE:
-                model.pauseGame();
-                return new boolean[MarioActions.numberOfActions()];
-
-            default:
-                return new boolean[0];
+        STATE nextState = this.getNextState(model, timer);
+        if(nextState != this.currentState) {
+            this.actioner = getActioner();
         }
+        if(this.actioner == null){
+            result = new boolean[MarioActions.numberOfActions()];
+        }
+        return result;
     }
 
     /**
@@ -80,5 +55,21 @@ public class Agent implements MarioAgent {
         return "Alan";
     }
 
+    @Override
+    public STATE getNextState(MarioForwardModel model, MarioTimer timer) {
+        return this.actioner.getNextState(model, timer);
+    }
 
+    private AbsActioner getActioner() {
+        switch(this.currentState){
+            case DEFAULT: return new AStarer();
+            case QUESTION_BOX: return new QuestionBoxer();
+            case POWERUP_GRAB: return new PowerupGrabber();
+            case ENEMY_SMASH: return new EnemySmasher();
+            case FIDGET: return new Fidgeter();
+            case PAUSE: return new Pauser();
+            case FIGURING: return null;
+            default: return null;
+        }
+    }
 }

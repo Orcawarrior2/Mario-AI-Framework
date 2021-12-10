@@ -6,10 +6,7 @@ import java.util.ArrayList;
 
 import engine.effects.*;
 import engine.graphics.MarioBackground;
-import engine.helper.EventType;
-import engine.helper.GameStatus;
-import engine.helper.SpriteType;
-import engine.helper.TileFeature;
+import engine.helper.*;
 import engine.sprites.*;
 
 public class MarioWorld {
@@ -291,6 +288,12 @@ public class MarioWorld {
     }
 
     public void update(boolean[] actions) {
+        //ADDED BY JUSTIN MITCHELL
+        //If there's a sixth action, it's the new pause feature
+        if(actions[MarioActions.PAUSE.getValue()]){
+            this.pauseTimer++;
+        }
+
         if (this.gameStatus != GameStatus.RUNNING) {
             return;
         }
