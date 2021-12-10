@@ -55,12 +55,6 @@ public class Agent implements MarioAgent {
     @Override
     public boolean[] getActions(MarioForwardModel model, MarioTimer timer) {
         switch(this.currentState){
-
-            case FIGURING:
-                return new boolean[1];
-            case FIDGET:
-                return this.fidgeter.getFidgetAction();
-
             case FIGURING:
                 return new boolean[1];
 

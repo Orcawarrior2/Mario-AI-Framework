@@ -39,7 +39,8 @@ public class Fidgeter {
                 break;
 
             case SQUATTING:
-                result[MarioActions.DOWN.getValue()] = this.fidgetRepetitions%2 == 0;
+                int period = this.paceDistance/4;
+                result[MarioActions.DOWN.getValue()] = this.fidgetRepetitions%period < (period/2);
                 break;
 
 
