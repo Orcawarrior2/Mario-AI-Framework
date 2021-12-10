@@ -19,6 +19,7 @@ public class MarioWorld {
     public Mario mario;
     public MarioLevel level;
     public boolean visuals;
+    public boolean isPaused;
     public int currentTick;
     //Status
     public int coins, lives;
@@ -46,6 +47,7 @@ public class MarioWorld {
         this.effects = new ArrayList<>();
         this.lastFrameEvents = new ArrayList<>();
         this.killEvents = killEvents;
+        this.isPaused = false;
     }
 
     public void initializeVisuals(GraphicsConfiguration graphicsConfig) {
@@ -289,10 +291,10 @@ public class MarioWorld {
 
     public void update(boolean[] actions) {
         //ADDED BY JUSTIN MITCHELL
-        //If there's a sixth action, it's the new pause feature
         if(actions[MarioActions.PAUSE.getValue()]){
             this.pauseTimer++;
-        }
+            this.isPaused = true;
+        } else this.isPaused = false;
 
         if (this.gameStatus != GameStatus.RUNNING) {
             return;

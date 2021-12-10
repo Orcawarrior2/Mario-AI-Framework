@@ -3,14 +3,13 @@ package agents.alan;
 import engine.core.MarioAgent;
 import engine.core.MarioForwardModel;
 import engine.core.MarioTimer;
-import engine.helper.MarioActions;
 
 /**
  * @author Matthew Aguiar and Justin Mitchell
  * CS/IMGD 4100 Group #9
  */
-public class Agent extends AbsActioner implements MarioAgent {
-    private STATE currentState;
+public class Agent implements MarioAgent {
+    private AbsActioner.STATE currentState;
     private AbsActioner actioner;
     /**
      * initialize and prepare the agent before the game starts
@@ -20,8 +19,8 @@ public class Agent extends AbsActioner implements MarioAgent {
      */
     @Override
     public void initialize(MarioForwardModel model, MarioTimer timer) {
-        this.currentState = STATE.FIDGET;
-        this.actioner = getActioner();
+        this.currentState = AbsActioner.STATE.PAUSE;
+        this.actioner = getNewActioner();
     }
 
     /**
@@ -35,13 +34,12 @@ public class Agent extends AbsActioner implements MarioAgent {
     public boolean[] getActions(MarioForwardModel model, MarioTimer timer) {
         boolean[] result = this.actioner.getActions(model, timer);
 
-        STATE nextState = this.getNextState(model, timer);
+        AbsActioner.STATE nextState = this.actioner.getNextState(model, timer);
         if(nextState != this.currentState) {
-            this.actioner = getActioner();
+            // Update Actioner if the state has changed
+            this.actioner = getNewActioner();
         }
-        if(this.actioner == null){
-            result = new boolean[MarioActions.numberOfActions()];
-        }
+
         return result;
     }
 
@@ -55,12 +53,7 @@ public class Agent extends AbsActioner implements MarioAgent {
         return "Alan";
     }
 
-    @Override
-    public STATE getNextState(MarioForwardModel model, MarioTimer timer) {
-        return this.actioner.getNextState(model, timer);
-    }
-
-    private AbsActioner getActioner() {
+    private AbsActioner getNewActioner() {
         switch(this.currentState){
             case DEFAULT: return new AStarer();
             case QUESTION_BOX: return new QuestionBoxer();
@@ -68,7 +61,7 @@ public class Agent extends AbsActioner implements MarioAgent {
             case ENEMY_SMASH: return new EnemySmasher();
             case FIDGET: return new Fidgeter();
             case PAUSE: return new Pauser();
-            case FIGURING: return null;
+            case FIGURING: return new Figurer();
             default: return null;
         }
     }
