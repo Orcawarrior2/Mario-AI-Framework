@@ -291,10 +291,12 @@ public class MarioWorld {
 
     public void update(boolean[] actions) {
         //ADDED BY JUSTIN MITCHELL
-        //if(actions[MarioActions.PAUSE.getValue()]){
-        //    this.pauseTimer++;
-        //    this.isPaused = true;
-        //} else this.isPaused = false;
+        if(actions.length == MarioActions.numberOfActions()){
+            if(actions[MarioActions.PAUSE.getValue()]){
+                this.pauseTimer++;
+                this.isPaused = true;
+            } else this.isPaused = false;
+        } else this.isPaused = false;
 
         if (this.gameStatus != GameStatus.RUNNING) {
             return;

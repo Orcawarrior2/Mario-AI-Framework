@@ -263,6 +263,9 @@ public class MarioGame {
                 agentEvents.add(new MarioAgentEvent(actions, this.world.mario.x,
                         this.world.mario.y, (this.world.mario.isLarge ? 1 : 0) + (this.world.mario.isFire ? 1 : 0),
                         this.world.mario.onGround, this.world.currentTick));
+            } else {
+                boolean[] actions = this.agent.getActions(new MarioForwardModel(this.world.clone()), agentTimer);
+                this.world.update(actions);
             }
 
             //render world

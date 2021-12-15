@@ -20,7 +20,7 @@ public class Agent implements MarioAgent {
      */
     @Override
     public void initialize(MarioForwardModel model, MarioTimer timer) {
-        this.currentState = AbsActioner.STATE.QUESTION_BOX;
+        this.currentState = AbsActioner.STATE.PAUSE;
         this.actioner = getNewActioner();
 
     }
