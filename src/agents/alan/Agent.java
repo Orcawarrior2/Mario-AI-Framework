@@ -11,6 +11,7 @@ import engine.core.MarioTimer;
 public class Agent implements MarioAgent {
     private AbsActioner.STATE currentState;
     private AbsActioner actioner;
+
     /**
      * initialize and prepare the agent before the game starts
      *
@@ -19,8 +20,9 @@ public class Agent implements MarioAgent {
      */
     @Override
     public void initialize(MarioForwardModel model, MarioTimer timer) {
-        this.currentState = AbsActioner.STATE.PAUSE;
+        this.currentState = AbsActioner.STATE.QUESTION_BOX;
         this.actioner = getNewActioner();
+
     }
 
     /**
@@ -37,6 +39,7 @@ public class Agent implements MarioAgent {
         AbsActioner.STATE nextState = this.actioner.getNextState(model, timer);
         if(nextState != this.currentState) {
             // Update Actioner if the state has changed
+            this.currentState = nextState;
             this.actioner = getNewActioner();
         }
 

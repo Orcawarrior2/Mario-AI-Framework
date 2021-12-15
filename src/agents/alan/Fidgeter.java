@@ -93,8 +93,15 @@ public class Fidgeter extends AbsActioner {
 
     @Override
     public STATE getNextState(MarioForwardModel model, MarioTimer timer) {
-        if(RNG.nextFloat() > 0.05 && model.getCompletionPercentage() < 0.5) {
-            return STATE.FIDGET;
-        } else return STATE.DEFAULT;
+        framesWaited++;
+        if(framesWaited == frameWaitThresh) {
+            framesWaited = 0;
+            if (RNG.nextFloat() < 0.4) {
+                return STATE.FIDGET;
+            } else {
+                return STATE.DEFAULT;
+            }
+        }
+        return STATE.FIDGET;
     }
 }
