@@ -96,9 +96,11 @@ public class Fidgeter extends AbsActioner {
         framesWaited++;
         if(framesWaited == frameWaitThresh) {
             framesWaited = 0;
-            if (RNG.nextFloat() < 0.4) {
+            if (RNG.nextFloat() < 0.2) {
+                return STATE.PAUSE;
+            } else if (RNG.nextFloat() < 0.4) {
                 return STATE.FIDGET;
-            } else {
+            } else{
                 return STATE.DEFAULT;
             }
         }
