@@ -24,6 +24,8 @@ public abstract class AbsActioner {
 
     Random RNG = new Random();
     public int stateRepetitions = 0;
+    public int framesWaited = 0;
+    public int frameWaitThresh = 30;
 
     abstract public boolean[] getActions(MarioForwardModel model, MarioTimer timer);
     abstract public STATE getNextState(MarioForwardModel model, MarioTimer timer);
